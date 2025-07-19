@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - School Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #a8e6cf 0%, #88d8a3 50%, #7fcdcd 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #2e7d32;
+            font-size: 1.8em;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .student-badge {
+            background: linear-gradient(135deg, #66bb6a 0%, #4caf50 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .logout-btn:hover {
+            background: #d32f2f;
+        }
+
+        .container {
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-item {
+            display: block;
+            padding: 15px 20px;
+            margin: 5px 0;
+            background: #f1f8e9;
+            color: #2e7d32;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background: linear-gradient(135deg, #66bb6a 0%, #4caf50 100%);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .content-section {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2e7d32;
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            color: #388e3c;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #66bb6a 0%, #4caf50 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e8f5e8;
+        }
+
+        .data-table th {
+            background: #f1f8e9;
+            color: #2e7d32;
+            font-weight: 600;
+        }
+
+        .data-table tr:hover {
+            background: #f9fbe7;
+        }
+
+        .course-card {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #4caf50;
+        }
+
+        .course-title {
+            font-weight: 600;
+            color: #2e7d32;
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+
+        .course-info {
+            color: #388e3c;
+            font-size: 0.9em;
+        }
+
+        .assignment-card {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #ff9800;
+        }
+
+        .assignment-title {
+            font-weight: 600;
+            color: #e65100;
+            margin-bottom: 5px;
+        }
+
+        .assignment-info {
+            color: #f57c00;
+            font-size: 0.9em;
+        }
+
+        .grade-card {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #2196f3;
+        }
+
+        .grade-title {
+            font-weight: 600;
+            color: #0d47a1;
+            margin-bottom: 5px;
+        }
+
+        .grade-info {
+            color: #1565c0;
+            font-size: 0.9em;
+        }
+
+        .grade-score {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #1976d2;
+            margin: 10px 0;
+        }
+
+        .notice-card {
+            background: #f3e5f5;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .notice-title {
+            font-weight: 600;
+            color: #4a148c;
+            margin-bottom: 5px;
+        }
+
+        .notice-info {
+            color: #7b1fa2;
+            font-size: 0.9em;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #66bb6a 0%, #4caf50 100%);
+            transition: width 0.3s ease;
+        }
+
+        .calendar-widget {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #4caf50;
+        }
+
+        .info-title {
+            font-weight: 600;
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+
+        .info-content {
+            color: #388e3c;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎓 Student Dashboard - School Management</h1>
+        <div class="user-info">
+            <div class="student-badge">
+                <span id="student-name">Student</span>
+            </div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3 style="color: #2e7d32; margin-bottom: 20px;">📚 Student Menu</h3>
+            
+            <button class="menu-item active" onclick="showSection('overview')">
+                📊 Overview
+            </button>
+            
+            <button class="menu-item" onclick="showSection('my-courses')">
+                📚 My Courses
+            </button>
+            
+            <button class="menu-item" onclick="showSection('assignments')">
+                📝 Assignments
+            </button>
+            
+            <button class="menu-item" onclick="showSection('grades')">
+                📊 My Grades
+            </button>
+            
+            <button class="menu-item" onclick="showSection('schedule')">
+                🕐 Class Schedule
+            </button>
+            
+            <button class="menu-item" onclick="showSection('notices')">
+                📢 Notices
+            </button>
+            
+            <button class="menu-item" onclick="showSection('attendance')">
+                📅 My Attendance
+            </button>
+            
+            <button class="menu-item" onclick="showSection('resources')">
+                📖 Study Resources
+            </button>
+            
+            <button class="menu-item" onclick="showSection('progress')">
+                📈 Academic Progress
+            </button>
+            
+            <button class="menu-item" onclick="showSection('profile')">
+                👤 My Profile
+            </button>
+        </div>
+
+        <div class="main-content">
+            <!-- Overview Section -->
+            <div id="overview" class="content-section active">
+                <h2>📊 Academic Overview</h2>
+                <div class="stats-grid" id="stats-container">
+                    <!-- Stats will be loaded here -->
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px;">
+                    <div>
+                        <h3>📝 Upcoming Assignments</h3>
+                        <div id="upcoming-assignments">
+                            <div class="loading">Loading assignments...</div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3>📢 Recent Notices</h3>
+                        <div id="recent-notices">
+                            <div class="loading">Loading notices...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Courses Section -->
+            <div id="my-courses" class="content-section">
+                <h2>📚 My Enrolled Courses</h2>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="loadMyCourses()">🔄 Refresh</button>
+                    <button class="action-btn" onclick="viewCourseProgress()">📊 View Progress</button>
+                </div>
+                <div id="courses-container">
+                    <div class="loading">Loading your courses...</div>
+                </div>
+            </div>
+
+            <!-- Assignments Section -->
+            <div id="assignments" class="content-section">
+                <h2>📝 My Assignments</h2>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="loadMyAssignments()">🔄 Refresh</button>
+                    <button class="action-btn" onclick="filterAssignments('pending')">⏳ Pending</button>
+                    <button class="action-btn" onclick="filterAssignments('submitted')">✅ Submitted</button>
+                    <button class="action-btn" onclick="filterAssignments('overdue')">⚠️ Overdue</button>
+                </div>
+                <div id="assignments-container">
+                    <div class="loading">Loading your assignments...</div>
+                </div>
+            </div>
+
+            <!-- Grades Section -->
+            <div id="grades" class="content-section">
+                <h2>📊 My Grades & Performance</h2>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="loadMyGrades()">🔄 Refresh</button>
+                    <button class="action-btn" onclick="viewGradeAnalytics()">📈 Analytics</button>
+                    <button class="action-btn" onclick="downloadTranscript()">📄 Download Transcript</button>
+                </div>
+                <div id="grades-container">
+                    <div class="loading">Loading your grades...</div>
+                </div>
+            </div>
+
+            <!-- Schedule Section -->
+            <div id="schedule" class="content-section">
+                <h2>🕐 My Class Schedule</h2>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="viewWeeklySchedule()">📅 Weekly View</button>
+                    <button class="action-btn" onclick="viewMonthlySchedule()">🗓️ Monthly View</button>
+                    <button class="action-btn" onclick="exportSchedule()">📊 Export Schedule</button>
+                </div>
+                <div id="schedule-container">
+                    <div class="calendar-widget">
+                        <h3>📅 This Week's Classes</h3>
+                        <p>🕐 Monday: Computer Science (9:00 AM - 10:30 AM)</p>
+                        <p>🕐 Tuesday: Mathematics (10:00 AM - 11:30 AM)</p>
+                        <p>🕐 Wednesday: Physics (2:00 PM - 3:30 PM)</p>
+                        <p>🕐 Thursday: Computer Science Lab (1:00 PM - 3:00 PM)</p>
+                        <p>🕐 Friday: English Literature (11:00 AM - 12:30 PM)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notices Section -->
+            <div id="notices" class="content-section">
+                <h2>📢 School Notices</h2>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="loadNotices()">🔄 Refresh</button>
+                    <button class="action-btn" onclick="filterNotices('important')">⚠️ Important</button>
+                    <button class="action-btn" onclick="filterNotices('general')">📝 General</button>
+                </div>
+                <div id="notices-container">
+                    <div class="loading">Loading notices...</div>
+                </div>
+            </div>
+
+            <!-- Attendance Section -->
+            <div id="attendance" class="content-section">
+                <h2>📅 My Attendance Record</h2>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="loadAttendance()">🔄 Refresh</button>
+                    <button class="action-btn" onclick="viewAttendanceStats()">📊 Statistics</button>
+                    <button class="action-btn" onclick="downloadAttendanceReport()">📄 Download Report</button>
+                </div>
+                <div id="attendance-container">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number">85%</div>
+                            <div class="stat-label">Overall Attendance</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">42</div>
+                            <div class="stat-label">Classes Attended</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">8</div>
+                            <div class="stat-label">Classes Missed</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">50</div>
+                            <div class="stat-label">Total Classes</div>
+                        </div>
+                    </div>
+                    <div class="course-card">
+                        <div class="course-title">📊 Attendance by Course</div>
+                        <div class="course-info">
+                            📚 Computer Science: 90% (18/20 classes)<br>
+                            🔢 Mathematics: 85% (17/20 classes)<br>
+                            ⚗️ Physics: 80% (16/20 classes)<br>
+                            📖 English: 75% (15/20 classes)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resources Section -->
+            <div id="resources" class="content-section">
+                <h2>📖 Study Resources</h2>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="browseLibrary()">📚 Digital Library</button>
+                    <button class="action-btn" onclick="viewLectureNotes()">📝 Lecture Notes</button>
+                    <button class="action-btn" onclick="accessOnlineBooks()">📖 Online Books</button>
+                    <button class="action-btn" onclick="practiceTests()">🧪 Practice Tests</button>
+                </div>
+                <div id="resources-container">
+                    <div class="course-card">
+                        <div class="course-title">📚 Available Resources</div>
+                        <div class="course-info">
+                            📖 Digital textbooks and reference materials<br>
+                            📝 Lecture notes and presentations<br>
+                            🎥 Video tutorials and recorded lectures<br>
+                            🧪 Practice exercises and mock tests<br>
+                            📊 Study guides and exam preparation materials
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Section -->
+            <div id="progress" class="content-section">
+                <h2>📈 Academic Progress Tracking</h2>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="viewProgressReport()">📊 Progress Report</button>
+                    <button class="action-btn" onclick="setGoals()">🎯 Set Goals</button>
+                    <button class="action-btn" onclick="viewAchievements()">🏆 Achievements</button>
+                </div>
+                <div id="progress-container">
+                    <div class="course-card">
+                        <div class="course-title">📊 Overall Academic Progress</div>
+                        <div class="course-info">Current Semester Progress</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 75%;"></div>
+                        </div>
+                        <p>75% Complete</p>
+                    </div>
+                    
+                    <div class="course-card">
+                        <div class="course-title">📚 Course-wise Progress</div>
+                        <div class="course-info">
+                            Computer Science: 
+                            <div class="progress-bar"><div class="progress-fill" style="width: 85%;"></div></div>
+                            Mathematics: 
+                            <div class="progress-bar"><div class="progress-fill" style="width: 70%;"></div></div>
+                            Physics: 
+                            <div class="progress-bar"><div class="progress-fill" style="width: 65%;"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Section -->
+            <div id="profile" class="content-section">
+                <h2>👤 My Profile</h2>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="editProfile()">✏️ Edit Profile</button>
+                    <button class="action-btn" onclick="changePassword()">🔒 Change Password</button>
+                    <button class="action-btn" onclick="updateContactInfo()">📞 Update Contact</button>
+                </div>
+                <div id="profile-container">
+                    <div class="loading">Loading profile information...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:8080';
+        let currentUser = null;
+        let studentProfile = null;
+
+        window.onload = function() {
+            loadUserData();
+            loadOverviewData();
+        };
+
+        function loadUserData() {
+            const userData = localStorage.getItem('currentUser');
+            if (!userData) {
+                window.location.href = 'school-login.html';
+                return;
+            }
+
+            currentUser = JSON.parse(userData);
+            if (currentUser.role !== 'STUDENT') {
+                alert('Access denied. Student privileges required.');
+                window.location.href = 'school-login.html';
+                return;
+            }
+
+            document.getElementById('student-name').textContent = currentUser.name;
+            loadStudentProfile();
+        }
+
+        async function loadStudentProfile() {
+            try {
+                studentProfile = await fetch(`${BASE_URL}/api/students/user/${currentUser.id}`).then(r => r.json());
+            } catch (error) {
+                console.error('Error loading student profile:', error);
+            }
+        }
+
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Remove active class from all menu items
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+
+            // Add active class to clicked menu item
+            event.target.classList.add('active');
+
+
+
+            // Load data for the section
+            loadSectionData(sectionId);
+        }
+
+        function loadSectionData(sectionId) {
+            switch(sectionId) {
+                case 'overview':
+                    loadOverviewData();
+                    break;
+                case 'my-courses':
+                    loadMyCourses();
+                    break;
+                case 'assignments':
+                    loadMyAssignments();
+                    break;
+                case 'grades':
+                    loadMyGrades();
+                    break;
+                case 'notices':
+                    loadNotices();
+                    break;
+                case 'profile':
+                    loadProfile();
+                    break;
+            }
+        }
+
+        async function loadOverviewData() {
+            try {
+                if (!studentProfile) {
+                    await loadStudentProfile();
+                }
+
+                const [courses, assignments, grades, notices] = await Promise.all([
+                    studentProfile ? fetch(`${BASE_URL}/api/courses/student/${studentProfile.id}`).then(r => r.json()) : Promise.resolve([]),
+                    fetch(`${BASE_URL}/api/assignments/active`).then(r => r.json()),
+                    studentProfile ? fetch(`${BASE_URL}/api/grades/student/${studentProfile.id}`).then(r => r.json()) : Promise.resolve([]),
+                    fetch(`${BASE_URL}/api/notices/active`).then(r => r.json())
+                ]);
+
+                // Calculate average grade
+                const avgGrade = grades.length > 0 ? 
+                    (grades.reduce((sum, grade) => sum + parseFloat(grade.grade), 0) / grades.length).toFixed(1) : 'N/A';
+
+                document.getElementById('stats-container').innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-number">${courses.length}</div>
+                        <div class="stat-label">Enrolled Courses</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${assignments.length}</div>
+                        <div class="stat-label">Active Assignments</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${grades.length}</div>
+                        <div class="stat-label">Grades Received</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${avgGrade}</div>
+                        <div class="stat-label">Average Grade</div>
+                    </div>
+                `;
+
+                // Load upcoming assignments
+                document.getElementById('upcoming-assignments').innerHTML = assignments.slice(0, 3).map(assignment => `
+                    <div class="assignment-card">
+                        <div class="assignment-title">${assignment.title}</div>
+                        <div class="assignment-info">
+                            Course: ${assignment.course?.courseName || 'N/A'}<br>
+                            Due: ${assignment.dueDate ? new Date(assignment.dueDate).toLocaleDateString() : 'No due date'}<br>
+                            Max Marks: ${assignment.maxMarks || 'N/A'}
+                        </div>
+                    </div>
+                `).join('') || '<p>No upcoming assignments</p>';
+
+                // Load recent notices
+                document.getElementById('recent-notices').innerHTML = notices.slice(0, 3).map(notice => `
+                    <div class="notice-card">
+                        <div class="notice-title">${notice.title}</div>
+                        <div class="notice-info">
+                            ${notice.content.substring(0, 100)}${notice.content.length > 100 ? '...' : ''}<br>
+                            <small>Priority: ${notice.priority} | ${new Date(notice.createdAt).toLocaleDateString()}</small>
+                        </div>
+                    </div>
+                `).join('') || '<p>No recent notices</p>';
+
+            } catch (error) {
+                console.error('Error loading overview:', error);
+            }
+        }
+
+        async function loadMyCourses() {
+            try {
+                if (!studentProfile) {
+                    await loadStudentProfile();
+                }
+
+                const courses = studentProfile ? 
+                    await fetch(`${BASE_URL}/api/courses/student/${studentProfile.id}`).then(r => r.json()) : [];
+                
+                document.getElementById('courses-container').innerHTML = courses.length > 0 ? courses.map(course => `
+                    <div class="course-card">
+                        <div class="course-title">${course.courseCode} - ${course.courseName}</div>
+                        <div class="course-info">
+                            👩‍🏫 Teacher: ${course.teacher?.name || 'Not assigned'}<br>
+                            📊 Credits: ${course.credits || 'N/A'}<br>
+                            📝 Description: ${course.description || 'No description available'}<br>
+                            🎓 Students Enrolled: ${course.students ? course.students.length : 0}
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <button class="action-btn" onclick="viewCourseDetails(${course.id})">View Details</button>
+                            <button class="action-btn" onclick="viewCourseAssignments(${course.id})">Assignments</button>
+                            <button class="action-btn" onclick="viewCourseGrades(${course.id})">My Grades</button>
+                        </div>
+                    </div>
+                `).join('') : '<div class="empty-state">📚 No courses enrolled yet. Contact your advisor to enroll in courses.</div>';
+            } catch (error) {
+                document.getElementById('courses-container').innerHTML = '<p>Error loading courses</p>';
+            }
+        }
+
+        async function loadMyAssignments() {
+            try {
+                const assignments = await fetch(`${BASE_URL}/api/assignments/active`).then(r => r.json());
+                
+                document.getElementById('assignments-container').innerHTML = assignments.length > 0 ? `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Assignment</th>
+                                <th>Course</th>
+                                <th>Due Date</th>
+                                <th>Max Marks</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${assignments.map(assignment => `
+                                <tr>
+                                    <td>${assignment.title}</td>
+                                    <td>${assignment.course?.courseName || 'N/A'}</td>
+                                    <td>${assignment.dueDate ? new Date(assignment.dueDate).toLocaleDateString() : 'No due date'}</td>
+                                    <td>${assignment.maxMarks || 'N/A'}</td>
+                                    <td><span style="background: #ff9800; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8em;">Pending</span></td>
+                                    <td>
+                                        <button onclick="viewAssignment(${assignment.id})" style="background: #2196f3; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">View</button>
+                                        <button onclick="submitAssignment(${assignment.id})" style="background: #4caf50; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-left: 5px;">Submit</button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                ` : '<div class="empty-state">📝 No assignments available at the moment.</div>';
+            } catch (error) {
+                document.getElementById('assignments-container').innerHTML = '<p>Error loading assignments</p>';
+            }
+        }
+
+        async function loadMyGrades() {
+            try {
+                if (!studentProfile) {
+                    await loadStudentProfile();
+                }
+
+                const grades = studentProfile ? 
+                    await fetch(`${BASE_URL}/api/grades/student/${studentProfile.id}`).then(r => r.json()) : [];
+                
+                if (grades.length === 0) {
+                    document.getElementById('grades-container').innerHTML = '<div class="empty-state">📊 No grades available yet.</div>';
+                    return;
+                }
+
+                // Calculate average
+                const avgGrade = (grades.reduce((sum, grade) => sum + parseFloat(grade.grade), 0) / grades.length).toFixed(1);
+
+                document.getElementById('grades-container').innerHTML = `
+                    <div class="grade-card">
+                        <div class="grade-title">📊 Overall Performance</div>
+                        <div class="grade-score">${avgGrade}%</div>
+                        <div class="grade-info">Average Grade across all courses</div>
+                    </div>
+                    
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Course</th>
+                                <th>Assignment</th>
+                                <th>Grade</th>
+                                <th>Max Grade</th>
+                                <th>Percentage</th>
+                                <th>Graded By</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${grades.map(grade => {
+                                const percentage = ((parseFloat(grade.grade) / parseFloat(grade.maxGrade)) * 100).toFixed(1);
+                                return `
+                                    <tr>
+                                        <td>${grade.course?.courseName || 'N/A'}</td>
+                                        <td>${grade.assignment?.title || 'General Grade'}</td>
+                                        <td>${grade.grade}</td>
+                                        <td>${grade.maxGrade}</td>
+                                        <td><span style="background: ${getGradeColor(percentage)}; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8em;">${percentage}%</span></td>
+                                        <td>${grade.gradedBy?.name || 'N/A'}</td>
+                                        <td>${new Date(grade.gradedAt).toLocaleDateString()}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch (error) {
+                document.getElementById('grades-container').innerHTML = '<p>Error loading grades</p>';
+            }
+        }
+
+        function getGradeColor(percentage) {
+            if (percentage >= 90) return '#4caf50';
+            if (percentage >= 80) return '#8bc34a';
+            if (percentage >= 70) return '#ffc107';
+            if (percentage >= 60) return '#ff9800';
+            return '#f44336';
+        }
+
+        async function loadNotices() {
+            try {
+                const notices = await fetch(`${BASE_URL}/api/notices/active`).then(r => r.json());
+
+                document.getElementById('notices-container').innerHTML = notices.length > 0 ? notices.map(notice => `
+                    <div class="notice-card">
+                        <div class="notice-title">${notice.title}</div>
+                        <div class="notice-info">
+                            ${notice.content}<br>
+                            <small>
+                                Priority: <span style="background: ${getPriorityColor(notice.priority)}; color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em;">${notice.priority}</span> |
+                                Posted: ${new Date(notice.createdAt).toLocaleDateString()} |
+                                By: ${notice.createdBy?.name || 'Admin'}
+                            </small>
+                        </div>
+                    </div>
+                `).join('') : '<div class="empty-state">📢 No notices available at the moment.</div>';
+            } catch (error) {
+                document.getElementById('notices-container').innerHTML = '<p>Error loading notices</p>';
+            }
+        }
+
+        function getPriorityColor(priority) {
+            switch(priority) {
+                case 'URGENT': return '#f44336';
+                case 'HIGH': return '#ff9800';
+                case 'NORMAL': return '#4caf50';
+                default: return '#666';
+            }
+        }
+
+        async function loadProfile() {
+            try {
+                if (!studentProfile) {
+                    await loadStudentProfile();
+                }
+
+                document.getElementById('profile-container').innerHTML = `
+                    <div class="profile-info">
+                        <div class="info-card">
+                            <div class="info-title">👤 Personal Information</div>
+                            <div class="info-content">
+                                <strong>Name:</strong> ${currentUser.name}<br>
+                                <strong>Email:</strong> ${currentUser.email}<br>
+                                <strong>Phone:</strong> ${currentUser.phoneNumber || 'Not provided'}<br>
+                                <strong>Role:</strong> ${currentUser.role}
+                            </div>
+                        </div>
+                        
+                        <div class="info-card">
+                            <div class="info-title">🎓 Academic Information</div>
+                            <div class="info-content">
+                                <strong>Student ID:</strong> ${studentProfile?.studentId || 'N/A'}<br>
+                                <strong>Grade Level:</strong> ${studentProfile?.gradeLevel || 'N/A'}<br>
+                                <strong>Date of Birth:</strong> ${studentProfile?.dateOfBirth ? new Date(studentProfile.dateOfBirth).toLocaleDateString() : 'N/A'}<br>
+                                <strong>Address:</strong> ${studentProfile?.address || 'Not provided'}
+                            </div>
+                        </div>
+                        
+                        <div class="info-card">
+                            <div class="info-title">📞 Emergency Contact</div>
+                            <div class="info-content">
+                                <strong>Parent/Guardian:</strong> ${studentProfile?.parentContact || 'Not provided'}<br>
+                                <strong>Emergency Phone:</strong> ${studentProfile?.parentContact || 'Not provided'}
+                            </div>
+                        </div>
+                        
+                        <div class="info-card">
+                            <div class="info-title">📊 Academic Status</div>
+                            <div class="info-content">
+                                <strong>Enrollment Status:</strong> Active<br>
+                                <strong>Academic Year:</strong> 2024-2025<br>
+                                <strong>Semester:</strong> Fall 2024<br>
+                                <strong>Advisor:</strong> Dr. Smith
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('profile-container').innerHTML = '<p>Error loading profile</p>';
+            }
+        }
+
+        // Placeholder functions for student-specific features
+        function viewCourseDetails(id) { alert('View course details - Coming soon!'); }
+        function viewCourseAssignments(id) { alert('View course assignments - Coming soon!'); }
+        function viewCourseGrades(id) { alert('View course grades - Coming soon!'); }
+        function viewAssignment(id) { alert('View assignment details - Coming soon!'); }
+        function submitAssignment(id) { alert('Submit assignment - Coming soon!'); }
+        function viewCourseProgress() { alert('View course progress - Coming soon!'); }
+        function filterAssignments(type) { alert(`Filter ${type} assignments - Coming soon!`); }
+        function viewGradeAnalytics() { alert('View grade analytics - Coming soon!'); }
+        function downloadTranscript() { alert('Download transcript - Coming soon!'); }
+        function viewWeeklySchedule() { alert('Weekly schedule - Coming soon!'); }
+        function viewMonthlySchedule() { alert('Monthly schedule - Coming soon!'); }
+        function exportSchedule() { alert('Export schedule - Coming soon!'); }
+        function filterNotices(type) { alert(`Filter ${type} notices - Coming soon!`); }
+        function loadAttendance() { alert('Load attendance - Coming soon!'); }
+        function viewAttendanceStats() { alert('Attendance statistics - Coming soon!'); }
+        function downloadAttendanceReport() { alert('Download attendance report - Coming soon!'); }
+        function browseLibrary() { alert('Browse digital library - Coming soon!'); }
+        function viewLectureNotes() { alert('View lecture notes - Coming soon!'); }
+        function accessOnlineBooks() { alert('Access online books - Coming soon!'); }
+        function practiceTests() { alert('Practice tests - Coming soon!'); }
+        function viewProgressReport() { alert('View progress report - Coming soon!'); }
+        function setGoals() { alert('Set academic goals - Coming soon!'); }
+        function viewAchievements() { alert('View achievements - Coming soon!'); }
+        function editProfile() { alert('Edit profile - Coming soon!'); }
+        function changePassword() { alert('Change password - Coming soon!'); }
+        function updateContactInfo() { alert('Update contact info - Coming soon!'); }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'school-login.html';
+        }
+    </script>
+</body>
+</html>
