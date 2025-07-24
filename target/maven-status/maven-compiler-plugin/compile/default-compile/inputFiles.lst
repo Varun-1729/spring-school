@@ -34,6 +34,7 @@ D:\Springboot\Full-Stack-Project\src\main\java\com\example\school\model\FeatureP
 D:\Springboot\Full-Stack-Project\src\main\java\com\example\school\model\Assignment.java
 D:\Springboot\Full-Stack-Project\src\main\java\com\example\school\service\StudentService.java
 D:\Springboot\Full-Stack-Project\src\main\java\com\example\school\model\AssignmentSubmission.java
+D:\Springboot\Full-Stack-Project\src\main\java\com\example\school\config\BrowserAutoOpenConfig.java
 D:\Springboot\Full-Stack-Project\src\main\java\com\example\school\service\GradeService.java
 D:\Springboot\Full-Stack-Project\src\main\java\com\example\school\controller\AttendanceController.java
 D:\Springboot\Full-Stack-Project\src\main\java\com\example\school\repository\AttendanceRepository.java

@@ -26,6 +26,7 @@ com\example\school\service\AttendanceService.class
 com\example\school\controller\UserController.class
 com\example\school\model\AttendanceStatus.class
 com\example\school\model\AssignmentSubmission.class
+com\example\school\config\BrowserAutoOpenConfig.class
 com\example\school\repository\GradeRepository.class
 com\example\school\repository\ComingSoonFeatureRepository.class
 com\example\school\controller\StudentController.class
