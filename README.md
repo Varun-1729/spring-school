@@ -46,6 +46,20 @@ spring.datasource.password=your_password
 4. Build & Run the Project
 mvn spring-boot:run
 ```
+## 📸 Screenshots
+
+### 🔐 Login Page
+![Login](screenshots/Login.png)
+
+### 👩‍🏫 Teacher Dashboard
+![Teacher](screenshots/teacher.png)
+
+### 🎓 Student Dashboard
+![Student](screenshots/student.png)
+
+### 👨‍💼 Admin Dashboard
+![Admin](screenshots/admin.png)
+
 
 ## 👤 Author
 
